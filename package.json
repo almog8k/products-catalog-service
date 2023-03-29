@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll",
     "test:integration": "jest --config=./tests/configurations/integration/jest.config.js",
     "start:dev": "PORT=5000 nodemon src/index.ts",
     "typeorm": "typeorm-ts-node-commonjs"
