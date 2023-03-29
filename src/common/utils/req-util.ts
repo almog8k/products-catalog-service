@@ -2,7 +2,7 @@ import { InvalidInputError } from "../errors/error-types";
 import { logger } from "../logger/logger-wrapper";
 
 export const reqQueryArrayParser = (
-  query: string | string[] | object
+  query: string | string[]
 ): Record<string, unknown>[] => {
   try {
     if (typeof query === "string") {

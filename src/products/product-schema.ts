@@ -37,7 +37,7 @@ export type ProductRequestParams = z.infer<typeof ProductUUIDSchema>;
 export type ProductOperationResponse = ProductRequestParams;
 
 export const ProductRequestQuerySchema = z.object({
-  filters: z.array(z.string()).or(z.string()).or(z.object({})).optional(),
+  filters: z.array(z.string()).or(z.string()).optional(),
 });
 
 export type ProductRequestQuery = z.infer<typeof ProductRequestQuerySchema>;
