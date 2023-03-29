@@ -1,0 +1,15 @@
+version: "3"
+services:
+  postgis:
+    image: mdillon/postgis
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: geo_catalog
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+volumes:
+  pgdata:

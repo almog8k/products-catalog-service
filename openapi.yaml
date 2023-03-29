@@ -1,0 +1,282 @@
+openapi: 3.0.0
+info:
+  title: Geospatial Products Catalog Service
+  description: CRUD operations for geospatial products with querying capabilities
+  version: 1.0.0
+servers:
+  - url: "http://localhost:5000"
+    description: For local development
+paths:
+  /products:
+    post:
+      tags:
+        - Products
+      summary: Create a new product
+      description: Creates a new product in the catalog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: The created product id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+
+    get:
+      tags:
+        - Products
+      operationId: getProducts
+      summary: Returns a list of products that match the given filteres
+      parameters:
+        - in: query
+          name: filters
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              oneOf:
+                - $ref: "#/components/schemas/NumberFilter"
+                - $ref: "#/components/schemas/StringFilter"
+                - $ref: "#/components/schemas/EnumFilter"
+                - $ref: "#/components/schemas/GeoShapeFilter"
+
+      responses:
+        "200":
+          description: A list of products that match the given filters.
+        "400":
+          description: The request is invalid.
+        "500":
+          description: An internal server error occurred.
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by id
+      description: Returns a product by its unique ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the a product to retrive
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: The requested product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+    patch:
+      tags:
+        - Products
+      summary: Update a product by ID
+      description: Updates a product by its unique ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the product to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "200":
+          description: The updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+    delete:
+      tags:
+        - Products
+      summary: Delete a product by ID
+      description: Deletes a product by its unique ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the product to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Product deleted successfully
+        "404":
+          description: Product not found
+
+components:
+  schemas:
+    ProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 48
+        description:
+          type: string
+        boundingPolygon:
+          $ref: "#/components/schemas/Polygon"
+        consumptionLink:
+          type: string
+        type:
+          type: string
+          enum: [RASTER, RASTERIZEDVECTOR, 3DTILES, QMESH]
+        consumptionProtocol:
+          type: string
+          enum: [WMS, WMTS, XYZ, 3DTILES]
+        resolutionBest:
+          type: number
+          format: double
+        minZoom:
+          type: integer
+          minimum: 0
+        maxZoom:
+          type: integer
+          minimum: 0
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 9c98109c-e96e-4ebe-b7c4-937fc9892e11
+        name:
+          type: string
+          maxLength: 48
+        description:
+          type: string
+        boundingPolygon:
+          $ref: "#/components/schemas/Polygon"
+        consumptionLink:
+          type: string
+        type:
+          type: string
+          enum: [RASTER, RASTERIZEDVECTOR, 3DTILES, QMESH]
+        consumptionProtocol:
+          type: string
+          enum: [WMS, WMTS, XYZ, 3DTILES]
+        resolutionBest:
+          type: number
+          format: double
+        minZoom:
+          type: integer
+          minimum: 0
+        maxZoom:
+          type: integer
+          minimum: 0
+
+    Polygon:
+      type: object
+      properties:
+        type:
+          type: string
+          default: Polygon
+        coordinates:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+                format: float
+      required:
+        - type
+        - coordinates
+
+    NumberFilter:
+      type: object
+      properties:
+        field:
+          type: string
+          enum: [resolutionBest, minZoom, maxZoom]
+        operator:
+          type: string
+          enum: [gt, ge, lt, le, eq]
+        value:
+          type: number
+      required:
+        - field
+        - operator
+        - value
+    StringFilter:
+      type: object
+      properties:
+        field:
+          type: string
+          enum: [name, description, type, consumptionProtocol]
+        operator:
+          type: string
+          enum: [eq]
+        value:
+          type: string
+      required:
+        - field
+        - operator
+        - value
+    EnumFilter:
+      type: object
+      properties:
+        field:
+          type: string
+          enum: [type, consumptionProtocol]
+        operator:
+          type: string
+          enum: [eq]
+        value:
+          type: string
+          enum:
+            [
+              RASTER,
+              RASTERIZED VECTOR,
+              3D TILES,
+              QMESH,
+              WMS,
+              WMTS,
+              XYZ,
+              3D TILES,
+            ]
+      required:
+        - field
+        - operator
+        - value
+    GeoShapeFilter:
+      type: object
+      properties:
+        field:
+          type: string
+          enum: [boundingPolygon]
+        operator:
+          type: string
+          enum: [contains, within, intersects]
+        value:
+          $ref: "#/components/schemas/Polygon"
+      required:
+        - field
+        - operator
+        - value
