@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: geo_catalog
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/src/DAL/migration/init.sql
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5431:5432"
