@@ -207,6 +207,9 @@ components:
               items:
                 type: number
                 format: float
+                minItems: 2
+                maxItems: 2
+
       required:
         - type
         - coordinates
