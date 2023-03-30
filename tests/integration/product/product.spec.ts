@@ -63,9 +63,7 @@ describe("product", () => {
         const createRes = await requestSender.createProduct(
           productMocks.validProduct
         );
-        const isValidResBody = ProductUUIDSchema.safeParse(
-          createRes.body
-        ).success;
+        const isValidResBody = ProductSchema.safeParse(createRes.body).success;
         expect(createRes.statusCode).toBe(StatusCodes.CREATED);
         expect(isValidResBody).toBe(true);
       });
