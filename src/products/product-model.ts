@@ -10,11 +10,12 @@ import {
 
 export async function createProduct(
   reqBody: CreateProductRequestBody
-): Promise<string> {
+): Promise<Product> {
   logger.info({ msg: "Creating Product" });
   const repo = await productRepository.getRepository();
   const id = await repo.createProduct(reqBody);
-  return id;
+  const createdProduct: Product = { id, ...reqBody };
+  return createdProduct;
 }
 
 export async function deleteProduct(

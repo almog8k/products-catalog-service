@@ -25,11 +25,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
+                $ref: "#/components/schemas/Product"
 
     get:
       tags:
@@ -54,6 +50,12 @@ paths:
       responses:
         "200":
           description: A list of products that match the given filters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
         "400":
           description: The request is invalid.
         "500":

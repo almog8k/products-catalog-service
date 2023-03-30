@@ -15,7 +15,7 @@ import { reqQueryArrayParser } from "../common/utils/req-util";
 
 type CreateProductHandler = RequestHandler<
   undefined,
-  ProductOperationResponse,
+  Product,
   CreateProductRequestBody
 >;
 
@@ -40,8 +40,8 @@ export const createProduct: CreateProductHandler = async (req, res, next) => {
   });
   try {
     const reqBody = productValidator.validateProductReqBody(req.body);
-    const id = await productModel.createProduct(reqBody);
-    return res.status(httpStatus.CREATED).json({ id });
+    const createdProduct = await productModel.createProduct(reqBody);
+    return res.status(httpStatus.CREATED).json(createdProduct);
   } catch (error) {
     return next(error);
   }
