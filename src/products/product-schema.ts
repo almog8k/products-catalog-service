@@ -27,7 +27,6 @@ export const UpdateProductSchema = CreateProductSchema.partial().strict();
 
 export type UpdateProductRequestBody = z.infer<typeof UpdateProductSchema>;
 
-const t: UpdateProductRequestBody = {};
 export const ProductUUIDSchema = z.object({
   id: z.string().uuid(),
 });

@@ -28,7 +28,7 @@ describe("product", () => {
 
     describe("given the provided id is not valid", () => {
       const invalidId = "1a2b";
-      it("should return a 404", async () => {
+      it("should return a 400", async () => {
         const getRes = await requestSender.getProduct(invalidId);
         expect(getRes.statusCode).toBe(StatusCodes.BAD_REQUEST);
       });
