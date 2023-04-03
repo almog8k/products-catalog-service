@@ -57,6 +57,7 @@ export async function getProduct(
 export async function getProducts(filters: ProductFilters): Promise<Product[]> {
   logger.info({
     msg: "getting filtered Products",
+    metadata: { filters },
   });
 
   const repo = await productRepository.getRepository();

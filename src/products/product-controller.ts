@@ -10,7 +10,6 @@ import {
 import * as productValidator from "./product-validator";
 import * as productModel from "./product-model";
 import httpStatus from "http-status-codes";
-import { ProductFilters } from "./product-filter-schema";
 import { reqQueryArrayParser } from "../common/utils/req-util";
 
 type CreateProductHandler = RequestHandler<

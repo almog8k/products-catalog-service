@@ -10,9 +10,8 @@ export async function getDataSource(): Promise<DataSource> {
   if (dataSource !== undefined) {
     return dataSource;
   }
+  const dbConfig: DataSourceOptions = configurationProvider.getValue("DB");
   try {
-    const dbConfig: DataSourceOptions = configurationProvider.getValue("DB");
-
     dataSource = new DataSource({
       ...dbConfig,
       entities: [ProductEntity],
@@ -27,7 +26,7 @@ export async function getDataSource(): Promise<DataSource> {
 
     return dataSource;
   } catch (err) {
-    logger.error({ msg: "Failed to get data source", metadata: { err } });
+    logger.error({ msg: err.message, metadata: { err, dbConfig } });
     throw new DBConnectionError("Db failed to connect", false);
   }
 }

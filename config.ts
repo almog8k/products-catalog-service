@@ -32,12 +32,12 @@ export const Configuration: ConfigSchema = {
       nullable: false,
       env: "DB_TYPE",
     },
-    user: {
+    username: {
       doc: "The DB connection user name",
       format: "String",
       default: "postgres",
       nullable: false,
-      env: "POSTGRES_USER",
+      env: "DB_USER",
     },
     port: {
       doc: "The DB port",
@@ -51,14 +51,14 @@ export const Configuration: ConfigSchema = {
       format: "String",
       default: "localhost",
       nullable: false,
-      env: "POSTGRES_DB",
+      env: "DB_HOST",
     },
     password: {
       doc: "The DB connection password. Don't put production code here",
       format: "String",
       default: "postgres",
       nullable: false,
-      env: "POSTGRES_PASSWORD",
+      env: "DB_PASSWORD",
     },
     database: {
       doc: "The default database name",

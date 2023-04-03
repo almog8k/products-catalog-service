@@ -37,7 +37,7 @@ export type ConfigSchema = {
       nullable: boolean;
       env: string;
     };
-    user: {
+    username: {
       doc: string;
       format: "String";
       default: string;

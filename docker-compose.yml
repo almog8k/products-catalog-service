@@ -7,9 +7,28 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: geo_catalog
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/src/DAL/migration/init.sql
+      # - ./init.sql:/docker-entrypoint-initdb.d/src/DAL/migration/init.sql
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5431:5432"
+  api:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - /app/node_modules
+      - .:/app
+    environment:
+      - DB_TYPE=postgres
+      - DB_USER=postgres
+      - DB_HOST=postgis
+      - DB_NAME=geo_catalog
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+      - PORT=3000
+    # command: npm run test:integration
 volumes:
   pgdata:

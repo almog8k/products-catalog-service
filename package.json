@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test:integration": "jest --config=./tests/configurations/integration/jest.config.js",
-    "start:dev": "PORT=5000 nodemon src/index.ts",
+    "start:dev": "nodemon src/index.ts",
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "keywords": [],
@@ -17,7 +17,6 @@
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/geojson": "^7946.0.10",
-    "@types/helmet": "^4.0.0",
     "@types/jest": "^29.5.0",
     "@types/supertest": "^2.0.12",
     "@types/swagger-ui-express": "^4.1.3",
