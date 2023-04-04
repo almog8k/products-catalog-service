@@ -45,3 +45,7 @@ export enum ProductGeoShapeFilterOperators {
   WITHIN = "within",
   INTERSECTS = "intersects",
 }
+
+export type ProductOperator =
+  | ProductFilterOperators
+  | ProductGeoShapeFilterOperators;

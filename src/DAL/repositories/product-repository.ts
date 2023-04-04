@@ -10,7 +10,10 @@ import {
 import { logger } from "../../common/logger/logger-wrapper";
 import { DataSource, Repository, SelectQueryBuilder } from "typeorm";
 import { ProductFilters } from "../../products/product-filter-schema";
-import { ProductGeoShapeFilterOperators } from "../../products/product-enums";
+import {
+  ProductGeoShapeFilterOperators,
+  ProductOperator,
+} from "../../products/product-enums";
 import * as wkx from "wkx";
 import { ResourceNotFoundError } from "../../common/errors/error-types";
 
@@ -100,35 +103,30 @@ export class ProductRepository extends Repository<ProductEntity> {
     for (const filter of filters) {
       const { field, operator, value } = filter;
       const entityField = productConverter.modelToEntityFieldConverter(field);
-      const comparisonSign =
-        productConverter.operatorComparisonMap.get(operator);
-
-      if (!entityField || !comparisonSign || !value) {
+      if (!entityField || !operator || !value) {
         continue;
       }
-
-      const isGeoShapeFilter = Object.values(
-        ProductGeoShapeFilterOperators
-      ).includes(operator as ProductGeoShapeFilterOperators);
-
-      if (isGeoShapeFilter) {
-        const expression = this.geoShapeFilterToWhereExpression(
+      let expression;
+      if (this.isGeoShapeOperator(operator)) {
+        expression = this.geoShapeFilterToWhereExpression(
           entityField,
           operator,
           value as Polygon
         );
-        queryBuilder.andWhere(expression);
       } else {
-        queryBuilder.andWhere(
-          `product.${entityField} ${comparisonSign} :value`,
-          {
-            value,
-          }
-        );
+        const comparisonSign =
+          productConverter.operatorComparisonMap.get(operator);
+        expression = `product.${entityField}${comparisonSign}'${value}'`;
       }
+      expression && queryBuilder.andWhere(expression);
     }
   }
 
+  private isGeoShapeOperator(operator: ProductOperator) {
+    return Object.values(ProductGeoShapeFilterOperators).includes(
+      operator as ProductGeoShapeFilterOperators
+    );
+  }
   private geoShapeFilterToWhereExpression(
     column: string,
     operator: string,
