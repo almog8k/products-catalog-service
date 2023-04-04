@@ -9,7 +9,7 @@ import {
 } from "../../products/product-schema";
 import { logger } from "../../common/logger/logger-wrapper";
 import { DataSource, Repository, SelectQueryBuilder } from "typeorm";
-import { ProductFilters } from "../../products/product-filter-schema";
+import { ProductFilter } from "../../products/product-filter-schema";
 import {
   ProductGeoShapeFilterOperators,
   ProductOperator,
@@ -83,9 +83,11 @@ export class ProductRepository extends Repository<ProductEntity> {
     return productModel;
   }
 
-  public async getProducts(productFilter: ProductFilters): Promise<Product[]> {
+  public async getProducts(
+    productFilters: ProductFilter[]
+  ): Promise<Product[]> {
     const queryBuilder = this.createQueryBuilder("product");
-    this.addFiltersToProductQueryBuilder(productFilter, queryBuilder);
+    this.addFiltersToProductQueryBuilder(productFilters, queryBuilder);
     const res = await queryBuilder.getMany();
     const products = res.map((productEntity) =>
       productConverter.getEntityToModel(productEntity)
@@ -94,7 +96,7 @@ export class ProductRepository extends Repository<ProductEntity> {
   }
 
   private addFiltersToProductQueryBuilder(
-    filters: ProductFilters,
+    filters: ProductFilter[],
     queryBuilder: SelectQueryBuilder<ProductEntity>
   ) {
     if (!filters) {

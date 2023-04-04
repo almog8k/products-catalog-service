@@ -46,14 +46,14 @@ const ProductEnumFilterSchema = z.discriminatedUnion("field", [
   ProductConsumptionProtocolFilterSchema,
 ]);
 
-export const ProductFilterSchema = z
-  .array(
-    ProductNumberFilterSchema.or(ProductStringFilterSchema)
-      .or(ProductEnumFilterSchema)
-      .or(ProductGeoShapeFilterSchema)
-  )
-  .optional();
+export const ProductFilterSchema = ProductNumberFilterSchema.or(
+  ProductStringFilterSchema
+)
+  .or(ProductEnumFilterSchema)
+  .or(ProductGeoShapeFilterSchema);
 
-export type ProductFilters = z.infer<typeof ProductFilterSchema>;
+export const ProductFiltersSchema = z.array(ProductFilterSchema);
+
+export type ProductFilter = z.infer<typeof ProductFilterSchema>;
 
 export type ProductGeoShapeFilter = z.infer<typeof ProductGeoShapeFilterSchema>;

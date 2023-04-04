@@ -1,6 +1,6 @@
 import { logger } from "../common/logger/logger-wrapper";
 import * as productRepository from "../DAL/repositories/product-repository";
-import { ProductFilters } from "./product-filter-schema";
+import { ProductFilter } from "./product-filter-schema";
 import {
   CreateProductRequestBody,
   Product,
@@ -54,7 +54,9 @@ export async function getProduct(
   return product;
 }
 
-export async function getProducts(filters: ProductFilters): Promise<Product[]> {
+export async function getProducts(
+  filters: ProductFilter[]
+): Promise<Product[]> {
   logger.info({
     msg: "getting filtered Products",
     metadata: { filters },

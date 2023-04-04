@@ -9,7 +9,7 @@ import {
   ProductRequestQuerySchema,
 } from "./product-schema";
 import { logger } from "../common/logger/logger-wrapper";
-import { ProductFilterSchema, ProductFilters } from "./product-filter-schema";
+import { ProductFiltersSchema, ProductFilter } from "./product-filter-schema";
 import { InvalidInputError } from "../common/errors/error-types";
 
 export const validateProductReqBody = (reqBody): CreateProductRequestBody => {
@@ -73,10 +73,10 @@ export const validateProductRequestQuery = (reqQuery): ProductRequestQuery => {
   return validatedQuery.data;
 };
 
-export const validateProductFilters = (reqQueryParams): ProductFilters => {
+export const validateProductFilters = (reqQueryParams): ProductFilter[] => {
   logger.debug({ msg: "Validating product filters" });
 
-  const validatedFilters = ProductFilterSchema.safeParse(reqQueryParams);
+  const validatedFilters = ProductFiltersSchema.safeParse(reqQueryParams);
   if (!validatedFilters.success) {
     logger.error({
       msg: "Invalid product filters",
