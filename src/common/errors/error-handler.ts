@@ -37,7 +37,7 @@ class ErrorHandler {
     error: Error | AppError,
     response: AppErrorResponse
   ): void {
-    if (this.isTrustedError(error) && response) {
+    if (this.isTrustedError(error) && response !== undefined) {
       this.handleTrustedError(error as AppError, response);
     } else {
       this.handleCriticalError(error, response);
@@ -57,7 +57,7 @@ class ErrorHandler {
     response?: AppErrorResponse
   ): void {
     logger.error({ msg: error.message, metadata: error });
-    if (response) {
+    if (response !== undefined) {
       response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: "Internal server error" });
@@ -75,7 +75,7 @@ class ErrorHandler {
 
   private async terminateHttpServerAndExit(): Promise<void> {
     logger.error({ msg: "Gracefully closing the server" });
-    if (this.httpServerRef) {
+    if (this.httpServerRef !== undefined) {
       await this.httpServerRef.close();
     }
     process.exit(1);

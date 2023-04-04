@@ -3,17 +3,21 @@ import { getApp } from "../../../src/app";
 import { StatusCodes } from "http-status-codes";
 import {
   ProductSchema,
-  ProductUUIDSchema,
   UpdateProductRequestBody,
 } from "../../../src/products/product-schema";
 import { v4 } from "uuid";
 import * as productMocks from "../../mocks/product-mocks";
+import * as dataManager from "../../../src/DAL/connection-manager";
 
 let requestSender: ProductRequestSender;
 
 beforeAll(() => {
   const app = getApp();
   requestSender = new ProductRequestSender(app);
+});
+
+afterAll(async () => {
+  (await dataManager.getDataSource()).destroy();
 });
 
 describe("product", () => {
