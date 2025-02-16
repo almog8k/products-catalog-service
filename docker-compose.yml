@@ -1,34 +1,77 @@
 version: "3"
 services:
-  postgis:
-    image: mdillon/postgis
+  postgres:
+    image: postgres:11
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: geo_catalog
+      POSTGRES_DB: expense_manager
+      POSTGRES_HOST: 127.0.0.1
     volumes:
       # - ./init.sql:/docker-entrypoint-initdb.d/src/DAL/migration/init.sql
       - pgdata:/var/lib/postgresql/data
+    tty: true
     ports:
-      - "5431:5432"
-  api-dev:
+      - "5432:5432"
+    networks:
+      - lb-network
+  back-end:
+    profiles:
+      - "dev"
     restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    image: lb-api
+    container_name: back-end
+    tty: true
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
       - /app/node_modules
       - .:/app
     environment:
       - DB_TYPE=postgres
       - DB_USER=postgres
-      - DB_HOST=postgis
-      - DB_NAME=geo_catalog
+      - DB_NAME=expense_manager
       - DB_PASSWORD=postgres
       - DB_PORT=5432
-      - PORT=3000
-    command: sh -c "npm run test:integration && npm run start:dev"
+      - DB_HOST=postgres
+      - PORT=8080
+    command: sh -c "npm run start:dev"
+    networks:
+      - lb-network
+    depends_on:
+      - postgres
+    # command: sh -c "npm run test:integration && npm run start:dev"
+  front-end:
+    image: lb-ui
+    container_name: front-end
+    networks:
+      - lb-network
+    volumes:
+      - ./react:/usr/src/app
+      - /usr/src/app/node_modules
+    tty: true
+    ports:
+      - "3000:3000"
+    command: npm run start
+  nginx:
+    profiles:
+      - "dev"
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    container_name: nginx
+    restart: always
+    tty: true
+    ports:
+      - "8000:80"
+    networks:
+      - lb-network
+    depends_on:
+      - front-end
+      - back-end
 volumes:
   pgdata:
+
+networks:
+  lb-network:
+    driver: bridge

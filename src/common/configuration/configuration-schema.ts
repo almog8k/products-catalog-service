@@ -75,4 +75,15 @@ export type ConfigSchema = {
     nullable: boolean;
     env: string;
   };
+  externalServices: {
+    conversionRates: {
+      url: {
+        doc: string;
+        format: "String";
+        default: string;
+        nullable: boolean;
+        env: string;
+      };
+    };
+  };
 };

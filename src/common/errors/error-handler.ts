@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { logger } from "../logger/logger-wrapper";
 import { AppErrorResponse } from "../middlewares/error-handling-midleware";
 import { AppError, HttpErrorCodeMapper } from "./error-types";
+import { TypeORMError } from "typeorm";
 
 class ErrorHandler {
   private httpServerRef: Http.Server;
@@ -66,10 +67,17 @@ class ErrorHandler {
     this.terminateHttpServerAndExit();
   }
 
-  private isTrustedError(error: Error | AppError): boolean {
+  private isTrustedError(error: Error | AppError | SyntaxError): boolean {
     if (error instanceof AppError) {
       return error.isTrusted;
     }
+    if (error instanceof SyntaxError) {
+      return true;
+    }
+    if (error instanceof TypeORMError) {
+      return true;
+    }
+
     return false;
   }
 

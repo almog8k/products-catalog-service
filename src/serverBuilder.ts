@@ -9,10 +9,14 @@ import YAML from "yamljs";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 import { getErrorHandlerMiddleware } from "./common/middlewares/error-handling-midleware";
+import defineExpensesRoutes from "./expenses/routes/expenseRouter";
+import defineCategoriesRoutes from "./categories/routes/categoryRouter";
+import cors from "cors";
 const server: express.Application = express();
 
 export function buildServer(): express.Application {
   setServerConfig();
+  useCors();
   registerPreRoutesMiddleWare();
   buildRoutes();
   registerPostRoutesMiddleWare();
@@ -27,8 +31,14 @@ function setServerConfig() {
   });
 }
 
+function useCors(): void {
+  server.use(cors({ origin: "*" }));
+}
+
 function buildRoutes(): void {
+  server.use("/expense", defineExpensesRoutes());
   server.use("/products", defineProductsRoutes());
+  server.use("/categories", defineCategoriesRoutes());
   buildDocsRoutes();
 }
 

@@ -3,8 +3,13 @@ import * as configurationProvider from "../common/configuration/configuration-pr
 import { DBConnectionError } from "../common/errors/error-types";
 import { logger } from "../common/logger/logger-wrapper";
 import { ProductEntity } from "./entity/product-entity";
+import { ExpenseEntity } from "./entity/expenseEntity";
+import { SubCategoryEntity } from "./entity/subCategory";
+import { CategoryEntity } from "./entity/categoryEntity";
+import { ConversionRatesUSDEntity } from "./entity/ConversionRatesByUSDEntity";
+import { CustomNamingStrategy } from "./namingStrategy/customeNamingStrategy";
 
-let dataSource: DataSource;
+export let dataSource: DataSource;
 
 export async function getDataSource(): Promise<DataSource> {
   if (dataSource !== undefined) {
@@ -14,8 +19,14 @@ export async function getDataSource(): Promise<DataSource> {
   try {
     dataSource = new DataSource({
       ...dbConfig,
-      entities: [ProductEntity],
-      synchronize: true,
+      entities: [
+        ExpenseEntity,
+        CategoryEntity,
+        SubCategoryEntity,
+        ConversionRatesUSDEntity,
+      ],
+      synchronize: false,
+      // namingStrategy: new CustomNamingStrategy(),
     });
 
     await dataSource.initialize();

@@ -1,4 +1,4 @@
-import * as dataManager from "../connection-manager";
+import * as dataManager from "../connectionManager";
 import { ProductEntity } from "../entity/product-entity";
 import * as productConverter from "../convertors/productModelConvertor";
 import {
@@ -21,6 +21,7 @@ export class ProductRepository extends Repository<ProductEntity> {
   constructor(private dataSource: DataSource) {
     super(ProductEntity, dataSource.createEntityManager());
   }
+
   public async createProduct(
     reqBody: CreateProductRequestBody
   ): Promise<string> {

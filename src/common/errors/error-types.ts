@@ -34,8 +34,11 @@ export class DBConnectionError extends AppError {
   }
 }
 
-export const HttpErrorCodeMapper = (err: AppError): StatusCodes => {
-  if (err instanceof InvalidInputError) {
+export const HttpErrorCodeMapper = (err: AppError | any): StatusCodes => {
+  if (
+    err instanceof InvalidInputError ||
+    err.statusCode === StatusCodes.BAD_REQUEST
+  ) {
     return StatusCodes.BAD_REQUEST;
   }
   if (err instanceof ResourceNotFoundError) {

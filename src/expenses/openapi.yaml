@@ -1,0 +1,406 @@
+openapi: 3.0.0
+info:
+  title: My Expense Tracking Service
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+
+components:
+  securitySchemes:
+    UserIdHeader:
+      type: apiKey
+      in: header
+      name: user-id
+  schemas:
+    UpdateExpense:
+      type: object
+      properties:
+        description:
+          type: string
+          maxLength: 250
+          example: "Coffee"
+        price:
+          type: number
+          format: float
+          example: 3.50
+        currency:
+          type: string
+          maxLength: 3
+          example: "USD"
+        categoryId:
+          type: string
+          format: uuid
+          example: "f1adb7ff-6ae1-4139-98a3-f439b62504b6"
+        subCategoryId:
+          type: string
+          format: uuid
+          example: "2ebbef0f-1023-4093-9cb6-433cd0afb828"
+        imageUrl:
+          type: string
+          format: uri
+          example: "https://example.com/coffee-receipt.jpg"
+    NewExpense:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/UpdateExpense"
+        - type: object
+      required:
+        - description
+        - price
+        - currency
+        - categoryId
+        - subCategoryId
+    Expense:
+      allOf:
+        - $ref: "#/components/schemas/NewExpense"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: "01234567-89ab-cdef-0123-456789abcdef"
+            createdAt:
+              type: string
+              format: date-time
+              example: "2023-04-22T15:25:00Z"
+            updatedAt:
+              type: string
+              format: date-time
+              example: "2023-04-22T15:25:00Z"
+          required:
+            - id
+            - createdAt
+            - updatedAt
+    ExpenseGroupArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/ExpenseGroup"
+    ExpenseGroup:
+      type: object
+      properties:
+        monthYear:
+          type: string
+          format: date
+          example: "2023-04"
+        totalSum:
+          $ref: "#/components/schemas/TotalSum"
+        expenses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expense"
+    TotalSum:
+      type: object
+      properties:
+        sum:
+          type: number
+          format: float
+          example: 123.45
+        currency:
+          type: string
+          example: "USD"
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "10dd08f1-02e9-40fa-a483-a6a85b12a308"
+        name:
+          type: string
+          example: "Entertainment"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-02-25T21:08:35.058Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-02-25T21:08:35.058Z"
+        subCategories:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubCategory"
+      required:
+        - id
+        - name
+    SubCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550b3d37-de4f-4c44-95f8-b7e7e152bc56"
+        name:
+          type: string
+          example: "Games"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-02-25T21:08:35.058Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-02-25T21:08:35.058Z"
+      required:
+        - id
+        - name
+
+security:
+  - UserIdHeader: []
+
+paths:
+  /expense:
+    post:
+      tags:
+        - "expense"
+      summary: Create a new expense
+      description: Creates a new expense for the authenticated user
+      operationId: createExpense
+      requestBody:
+        description: The expense to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewExpense"
+      responses:
+        '201':
+          description: The created expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        '400': 
+          description: Bad Request - Invalid Expense
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      security:
+        - UserIdHeader: []
+    get: 
+      tags:
+        - "expense"
+      summary: Retrieve all expenses
+      description: Retrieves all expenses for the authenticated user
+      operationId: getExpenses
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expense"
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      security:
+        - UserIdHeader: []
+  /expense/groupBy/monthYear:
+    get:
+      tags:
+        - "expense"
+      operationId: getExpensesGroupedByMonthYear
+      summary: Get expenses grouped by month and year
+      description: Retrieves all expenses for the authenticated user, grouped by month and year
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseGroupArray"
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      security:
+        - UserIdHeader: []
+  /expense/{id}:
+    get:
+      tags:
+        - "expense"
+      operationId: getExpenseById
+      summary: Retrieve an expense by ID
+      description: Retrieves the expense with the specified ID for the authenticated user
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the expense to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "01234567-89ab-cdef-0123-456789abcdef"
+      responses:
+        '200':
+          description: The requested expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Expense not found
+        '500':
+          description: Internal Server Error
+      security:
+        - UserIdHeader: []
+    patch:
+      tags:
+        - "expense"
+      operationId: updateExpenseById
+      summary: Update an expense by ID
+      description: Updates the expense with the specified ID for the authenticated user
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the expense to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "01234567-89ab-cdef-0123-456789abcdef"
+      requestBody:
+        description: The expense to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateExpense"
+      responses:
+        '200':
+          description: The updated expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Expense not found
+        '500':
+          description: Internal Server Error
+      security:
+        - UserIdHeader: []
+    delete:
+      tags:
+        - "expense"
+      operationId: deleteExpenseById
+      summary: Delete an expense by ID
+      description: Deletes the expense with the specified ID for the authenticated user
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the expense to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "01234567-89ab-cdef-0123-456789abcdef"
+      responses:
+        '204':
+          description: Expense deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Expense not found
+        '500':
+          description: Internal Server Error
+      security:
+        - UserIdHeader: []
+  /expense/total:
+    get:
+      tags:
+        - "expense"
+      operationId: getExpensesTotalSum
+      summary: Get the total sum of all expenses
+      description: Retrieves the total sum of all expenses for the authenticated user, converted to the specified currency
+      parameters:
+        - name: targetCurrency
+          in: query
+          description: The target currency for the total sum
+          required: true
+          schema:
+            type: string
+            example: "USD"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TotalSum"
+            
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /expense/exchangeRate/updateExchangeRate:
+    get:
+      tags:
+        - "exchangeRate"
+      operationId: updateExchangeRate
+      summary: Update exchange rate
+      description: Updates the exchange rate for the specified currency pair
+      responses:
+        '200':
+          description: Exchange rate updated successfully
+        '500':
+          description: Internal Server Error        
+  /categories:
+    get:
+      tags:
+        - "categories"
+      operationId: getCategories
+      summary: Retrieve all categories
+      description: Retrieves all categories
+      parameters:
+        - name: withSubCategories
+          in: query
+          description: Include sub-categories in the response
+          required: false
+          schema:
+            type: boolean
+            example: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+        '500':
+          description: Internal Server Error
+  /categories/subCategories:
+    get:
+      tags:
+        - "categories"
+      operationId: getSubCategories
+      summary: Retrieve all sub-categories
+      description: Retrieves all sub-categories
+      parameters:
+        - name: withCategories
+          in: query
+          description: Include categories in the response
+          required: false
+          schema:
+            type: boolean
+            example: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubCategory"
+        '500':
+          description: Internal Server Error        

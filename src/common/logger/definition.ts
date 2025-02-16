@@ -1,3 +1,5 @@
+import { logContext } from "./logContext";
+
 export type LOG_LEVEL = "debug" | "info" | "warn" | "error" | "critical";
 
 export interface Logger {
@@ -15,5 +17,7 @@ export interface LoggerConfiguration {
 
 export interface LogData {
   msg: string;
+  err?: unknown;
+  logContext?: logContext;
   metadata?: unknown;
 }

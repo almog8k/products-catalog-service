@@ -10,7 +10,7 @@ import {
 import * as productValidator from "./product-validator";
 import * as productModel from "./product-model";
 import httpStatus from "http-status-codes";
-import { reqQueryArrayParser } from "../common/utils/req-util";
+import { reqQueryArrayParser } from "../common/utils/util";
 
 type CreateProductHandler = RequestHandler<
   undefined,
