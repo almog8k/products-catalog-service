@@ -14,5 +14,3 @@ export const headersSchema = z
   .object({})
   .merge(timeZoneHeaderSchema)
   .merge(userIdHeaderSchema);
-
-type x = z.infer<typeof headersSchema>;

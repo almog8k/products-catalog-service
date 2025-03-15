@@ -12,14 +12,19 @@ import { getErrorHandlerMiddleware } from "./common/middlewares/error-handling-m
 import defineExpensesRoutes from "./expenses/routes/expenseRouter";
 import defineCategoriesRoutes from "./categories/routes/categoryRouter";
 import cors from "cors";
+import defineGroupRoutes from "./groups/routes/groupRouter";
+import { registerContainerDependencies } from "./common/containerRegistry";
+import defineUsersRoutes from "./users/routes/userRoutes";
 const server: express.Application = express();
 
-export function buildServer(): express.Application {
+export async function buildServer(): Promise<express.Application> {
   setServerConfig();
   useCors();
+  await registerContainerDependencies();
   registerPreRoutesMiddleWare();
   buildRoutes();
-  registerPostRoutesMiddleWare();
+  await registerPostRoutesMiddleWare();
+
   return server;
 }
 
@@ -39,6 +44,8 @@ function buildRoutes(): void {
   server.use("/expense", defineExpensesRoutes());
   server.use("/products", defineProductsRoutes());
   server.use("/categories", defineCategoriesRoutes());
+  server.use("/group", defineGroupRoutes());
+  server.use("/users", defineUsersRoutes());
   buildDocsRoutes();
 }
 

@@ -71,7 +71,7 @@ export const Configuration: ConfigSchema = {
   openapi: {
     doc: "The default openapi file path",
     format: "String",
-    default: "./expenses/openapi.yaml",
+    default: "./openapi.yaml",
     env: "OPENAPI_PATH",
     nullable: true,
   },

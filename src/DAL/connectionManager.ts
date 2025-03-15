@@ -8,6 +8,10 @@ import { SubCategoryEntity } from "./entity/subCategory";
 import { CategoryEntity } from "./entity/categoryEntity";
 import { ConversionRatesUSDEntity } from "./entity/ConversionRatesByUSDEntity";
 import { CustomNamingStrategy } from "./namingStrategy/customeNamingStrategy";
+import { GroupTypeEntity } from "./entity/groupTypeEntity";
+import { GroupEntity } from "./entity/groupEntity";
+import { UserEntity } from "./entity/userEntity";
+import { UserGroupsEntity } from "./entity/userGroupsEntity";
 
 export let dataSource: DataSource;
 
@@ -24,8 +28,13 @@ export async function getDataSource(): Promise<DataSource> {
         CategoryEntity,
         SubCategoryEntity,
         ConversionRatesUSDEntity,
+        GroupTypeEntity,
+        GroupEntity,
+        UserEntity,
+        UserGroupsEntity,
       ],
       synchronize: false,
+
       // namingStrategy: new CustomNamingStrategy(),
     });
 

@@ -3,6 +3,7 @@ import { ExpenseEntity } from "./entity/expenseEntity";
 import { CategoryEntity } from "./entity/categoryEntity";
 import { SubCategoryEntity } from "./entity/subCategory";
 import { ConversionRatesUSDEntity } from "./entity/ConversionRatesByUSDEntity";
+import { GroupTypeEntity } from "./entity/groupTypeEntity";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -16,6 +17,7 @@ export const AppDataSource = new DataSource({
     CategoryEntity,
     SubCategoryEntity,
     ConversionRatesUSDEntity,
+    GroupTypeEntity,
   ],
   migrations: ["src/DAL/migrations/*.ts"],
   synchronize: false,

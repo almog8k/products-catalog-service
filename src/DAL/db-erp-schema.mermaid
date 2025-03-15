@@ -1,0 +1,66 @@
+<!-- [MermaidChart: aa48a713-db04-47d4-8121-19a5296f39fb] -->
+
+erDiagram
+users ||--o{ expenses : "owns"
+users ||--o{ user_groups : "belongs to"
+groups ||--o{ user_groups : "has members"
+groups ||--o{ group_expenses : "has"
+expenses ||--o{ group_expenses : "associated with"
+group_expenses ||--o{ expense_splits : "divided into"
+users ||--o{ expense_splits : "participates in"
+
+    users {
+        uuid id PK
+        string names
+        string email
+        timestamp created_at
+    }
+
+    expenses {
+        uuid id PK
+        decimal amount
+        uuid category_id FK
+        uuid owner_id FK "references users"
+        string description
+        timestamp date
+        timestamp created_at
+    }
+
+    groups {
+        uuid id PK
+        string name
+        string group_type
+        timestamp created_at
+    }
+
+    user_groups {
+        uuid id PK
+        uuid user_id FK
+        uuid group_id FK
+        string role "admin/member"
+        timestamp joined_at
+    }
+
+    group_expenses {
+        uuid id PK
+        uuid expense_id FK
+        uuid group_id FK
+        timestamp created_at
+    }
+
+    expense_splits {
+        uuid id PK
+        uuid group_expense_id FK
+        uuid user_id FK
+        decimal amount "actual amount for user"
+        decimal percentage "optional percentage split"
+        string split_type "equal/custom/percentage"
+        timestamp created_at
+    }
+
+    categories {
+        uuid id PK
+        string name
+        string description
+        timestamp created_at
+    }

@@ -1,22 +1,15 @@
 import { Router } from "express";
-import * as expenseController from "../controllers/expenseController";
+import * as groupController from "../controllers/groupController";
 
-export default function defineExpensesRoutes() {
+export default function defineGroupRoutes() {
   const router = Router();
 
-  router.post("/", expenseController.createExpense);
-  router.get("/", expenseController.getExpenses);
-  router.get("/total", expenseController.getExpensesTotal);
-  router.get("/:id", expenseController.getExpense);
-  router.patch("/:id", expenseController.updateExpense);
-  router.delete("/:id", expenseController.deleteExpense);
-  router.get(
-    "/exchangeRate/updateExchangeRate",
-    expenseController.updateExchangeRate
-  );
-  router.get(
-    "/groupBy/monthYear",
-    expenseController.getExpensesGroupByMonthYear
+  router.get("/categories", groupController.getGroupTypes);
+  router.post("/", groupController.createGroup);
+  router.get("/me", groupController.getGroupsByUserId);
+  router.put(
+    "/:groupId/invitation/status",
+    groupController.updateUserGroupStatus
   );
 
   return router;

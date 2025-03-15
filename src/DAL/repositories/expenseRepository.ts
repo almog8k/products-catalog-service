@@ -43,7 +43,6 @@ export class ExpenseRepository extends Repository<ExpenseEntity> {
         logContext: logCtx,
         metadata: { result },
       });
-      const r = result.raw[0];
       return result.raw[0];
     } catch (err) {
       logger.error({
