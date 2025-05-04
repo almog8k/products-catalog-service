@@ -1,6 +1,8 @@
 import convict, { Path } from "convict";
+import * as dotenv from "dotenv";
 import { ConfigSchema } from "./configuration-schema";
 
+dotenv.config();
 let convictConfigurationProvider: convict.Config<ConfigSchema> | undefined;
 
 export function initialize(schema: ConfigSchema) {

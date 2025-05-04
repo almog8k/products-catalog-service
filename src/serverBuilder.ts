@@ -52,7 +52,7 @@ function buildRoutes(): void {
 
 function buildDocsRoutes(): void {
   const openapiPath = configurationProvider.getValue<string>("openapi");
-  const openapiDocument = YAML.load(path.join(__dirname, openapiPath));
+  const openapiDocument = YAML.load(openapiPath);
   server.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiDocument));
 }
 

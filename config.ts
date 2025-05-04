@@ -49,14 +49,14 @@ export const Configuration: ConfigSchema = {
     host: {
       doc: "The DB cluster URL",
       format: "String",
-      default: "aws-0-eu-central-1.pooler.supabase.com",
+      default: "postgres",
       nullable: false,
       env: "DB_HOST",
     },
     password: {
       doc: "The DB connection password. Don't put production code here",
       format: "String",
-      default: "Ak208753996!",
+      default: "password",
       nullable: false,
       env: "DB_PASSWORD",
     },
@@ -71,7 +71,7 @@ export const Configuration: ConfigSchema = {
   openapi: {
     doc: "The default openapi file path",
     format: "String",
-    default: "./openapi.yaml",
+    default: "openapi.yaml",
     env: "OPENAPI_PATH",
     nullable: true,
   },
@@ -79,15 +79,14 @@ export const Configuration: ConfigSchema = {
     url: {
       doc: "The supabase URL",
       format: "String",
-      default: "https://rshfxkwssnjrdqyvapdi.supabase.co",
+      default: "http://supabase.com",
       env: "SUPABASE_URL",
       nullable: false,
     },
     key: {
       doc: "The supabase key",
       format: "String",
-      default:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzaGZ4a3dzc25qcmRxeXZhcGRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcwMDg0NTEsImV4cCI6MjAzMjU4NDQ1MX0.Sp1ugAXR_wm0WUh1OD45dTpEj7C3VyCu9WZWS2_wONk",
+      default: "supabase_key",
       env: "SUPABASE_KEY",
       nullable: false,
     },
