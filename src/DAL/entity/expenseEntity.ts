@@ -6,8 +6,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Generated,
+  OneToMany,
 } from "typeorm";
-
+import { ExpenseSplitEntity } from "./expenseSplitEntity";
 @Entity("expense")
 export class ExpenseEntity {
   @PrimaryColumn({ name: "id", type: "uuid" })
@@ -16,6 +17,15 @@ export class ExpenseEntity {
 
   @Column({ name: "user_id", type: "uuid" })
   userId: string;
+
+  @Column({ name: "group_id", type: "uuid", nullable: true })
+  groupId: string | null;
+
+  @Column({ name: "is_group_expense", type: "boolean", default: false })
+  isGroupExpense: boolean;
+
+  @OneToMany(() => ExpenseSplitEntity, (split) => split.expense)
+  splits: ExpenseSplitEntity[];
 
   @Column({ name: "description", type: "varchar" })
   description: string;

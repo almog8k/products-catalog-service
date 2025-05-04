@@ -35,6 +35,13 @@ export const getGroupsByUserId = async (userId: string): Promise<Group[]> => {
   return groups;
 };
 
+export const getGroupById = async (groupId: string): Promise<Group> => {
+  const repo = container.resolve(GroupRepository);
+  const group = await repo.getGroupById(groupId);
+  logger.debug({ msg: "Group found.", metadata: { group } });
+  return group;
+};
+
 export const updateUserGroupStatus = async (
   userId: string,
   groupId: string,
@@ -54,4 +61,20 @@ export const updateUserGroupStatus = async (
     groupId: groupWithStatus.group.id,
     status: groupWithStatus.status,
   };
+};
+
+export const addUserToGroup = async (
+  userId: string,
+  groupId: string
+): Promise<void> => {
+  logger.info({
+    msg: "Adding user to group.",
+    metadata: { userId, groupId },
+  });
+  const repo = container.resolve(UserGroupsRepository);
+  await repo.insertUserToGroup(userId, groupId);
+  logger.debug({
+    msg: "User added to group.",
+    metadata: { userId, groupId },
+  });
 };

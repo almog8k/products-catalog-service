@@ -7,6 +7,11 @@ import { UserGroupsEntity } from "../entity/userGroupsEntity";
 import { container, inject, injectable, singleton } from "tsyringe";
 import { GroupRole, UserGroupStatus } from "../../groups/constants/groupConsts";
 import { SERVICES } from "../../common/constants";
+import {
+  AppError,
+  ResourceNotFoundError,
+  UserGroupError,
+} from "../../common/errors/error-types";
 
 @injectable()
 export class UserGroupsRepository extends Repository<UserGroupsEntity> {
@@ -40,7 +45,7 @@ export class UserGroupsRepository extends Repository<UserGroupsEntity> {
         metadata: { userId, groupId, status },
       });
       if (!updatedUserGroup) {
-        throw new Error("User group not found");
+        throw new ResourceNotFoundError("User group not found");
       }
 
       return updatedUserGroup;
@@ -49,26 +54,28 @@ export class UserGroupsRepository extends Repository<UserGroupsEntity> {
         msg: `Error updating user group status: ${err.message}`,
         metadata: { userId, groupId, status },
       });
-      throw new Error(`Error updating user group status: ${err.message}`);
+      if (err instanceof ResourceNotFoundError) {
+        throw err;
+      }
+      throw new UserGroupError(
+        `Error updating user group status: ${err.message}`
+      );
     }
   }
 
   public async insertUserToGroup(
     userId: string,
-    groupId: string,
-    role: GroupRole,
-    status: UserGroupStatus
+    groupId: string
   ): Promise<void> {
     try {
       logger.debug({
         msg: "Inserting new user group",
-        metadata: { userId, groupId, role },
+        metadata: { userId, groupId },
       });
 
       const savedUserGroup = await this.save({
         user: { id: userId },
         group: { id: groupId },
-        role: role,
         joinedAt: new Date(),
       });
 
@@ -77,7 +84,21 @@ export class UserGroupsRepository extends Repository<UserGroupsEntity> {
         metadata: { savedUserGroup },
       });
     } catch (err) {
-      throw new Error(`Error inserting user to group: ${err.message}`);
+      throw new UserGroupError(`Error inserting user to group: ${err.message}`);
     }
+  }
+
+  public async IsUserInGroup(
+    userId: string,
+    groupId: string
+  ): Promise<boolean> {
+    const userGroup = await this.findOne({
+      where: {
+        user: { id: userId },
+        group: { id: groupId },
+        status: UserGroupStatus.ACCEPTED,
+      },
+    });
+    return !!userGroup;
   }
 }

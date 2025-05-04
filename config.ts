@@ -75,6 +75,23 @@ export const Configuration: ConfigSchema = {
     env: "OPENAPI_PATH",
     nullable: true,
   },
+  supabase: {
+    url: {
+      doc: "The supabase URL",
+      format: "String",
+      default: "https://rshfxkwssnjrdqyvapdi.supabase.co",
+      env: "SUPABASE_URL",
+      nullable: false,
+    },
+    key: {
+      doc: "The supabase key",
+      format: "String",
+      default:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzaGZ4a3dzc25qcmRxeXZhcGRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcwMDg0NTEsImV4cCI6MjAzMjU4NDQ1MX0.Sp1ugAXR_wm0WUh1OD45dTpEj7C3VyCu9WZWS2_wONk",
+      env: "SUPABASE_KEY",
+      nullable: false,
+    },
+  },
   externalServices: {
     conversionRates: {
       url: {

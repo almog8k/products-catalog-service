@@ -18,6 +18,7 @@ export default function defineExpensesRoutes() {
     "/groupBy/monthYear",
     expenseController.getExpensesGroupByMonthYear
   );
+  router.post("/group", expenseController.createGroupExpense);
 
   return router;
 }

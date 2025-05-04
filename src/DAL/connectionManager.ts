@@ -12,6 +12,10 @@ import { GroupTypeEntity } from "./entity/groupTypeEntity";
 import { GroupEntity } from "./entity/groupEntity";
 import { UserEntity } from "./entity/userEntity";
 import { UserGroupsEntity } from "./entity/userGroupsEntity";
+import { ExpenseSplitEntity } from "./entity/expenseSplitEntity";
+import { GroupExpenseParticipantEntity } from "./entity/groupExpenseParticipantEntity";
+import { PaymentSettlementEntity } from "./entity/paymentSettlementEntity";
+import { PaymentSplitSettlementEntity } from "./entity/paymentSplitSettlementEntity";
 
 export let dataSource: DataSource;
 
@@ -20,6 +24,7 @@ export async function getDataSource(): Promise<DataSource> {
     return dataSource;
   }
   const dbConfig: DataSourceOptions = configurationProvider.getValue("DB");
+
   try {
     dataSource = new DataSource({
       ...dbConfig,
@@ -32,6 +37,10 @@ export async function getDataSource(): Promise<DataSource> {
         GroupEntity,
         UserEntity,
         UserGroupsEntity,
+        ExpenseSplitEntity,
+        GroupExpenseParticipantEntity,
+        PaymentSettlementEntity,
+        PaymentSplitSettlementEntity,
       ],
       synchronize: false,
 

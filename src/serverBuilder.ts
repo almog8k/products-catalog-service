@@ -15,6 +15,7 @@ import cors from "cors";
 import defineGroupRoutes from "./groups/routes/groupRouter";
 import { registerContainerDependencies } from "./common/containerRegistry";
 import defineUsersRoutes from "./users/routes/userRoutes";
+import { authenticate } from "./common/middlewares/authMiddleware";
 const server: express.Application = express();
 
 export async function buildServer(): Promise<express.Application> {
@@ -41,11 +42,11 @@ function useCors(): void {
 }
 
 function buildRoutes(): void {
-  server.use("/expense", defineExpensesRoutes());
+  server.use("/expense", authenticate, defineExpensesRoutes());
   server.use("/products", defineProductsRoutes());
-  server.use("/categories", defineCategoriesRoutes());
-  server.use("/group", defineGroupRoutes());
-  server.use("/users", defineUsersRoutes());
+  server.use("/categories", authenticate, defineCategoriesRoutes());
+  server.use("/group", authenticate, defineGroupRoutes());
+  server.use("/users", authenticate, defineUsersRoutes());
   buildDocsRoutes();
 }
 

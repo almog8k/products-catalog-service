@@ -4,21 +4,38 @@ import { CategoryEntity } from "./entity/categoryEntity";
 import { SubCategoryEntity } from "./entity/subCategory";
 import { ConversionRatesUSDEntity } from "./entity/ConversionRatesByUSDEntity";
 import { GroupTypeEntity } from "./entity/groupTypeEntity";
+import { GroupEntity } from "./entity/groupEntity";
+import { UserGroupsEntity } from "./entity/userGroupsEntity";
+import { ExpenseSplitEntity } from "./entity/expenseSplitEntity";
+import { GroupExpenseParticipantEntity } from "./entity/groupExpenseParticipantEntity";
+import { PaymentSettlementEntity } from "./entity/paymentSettlementEntity";
+import { PaymentSplitSettlementEntity } from "./entity/paymentSplitSettlementEntity";
+import { UserEntity } from "./entity/userEntity";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: "127.0.0.1",
-  port: 5432,
-  username: "postgres",
-  password: "postgres",
-  database: "expense_manager",
+  host: "aws-0-eu-central-1.pooler.supabase.com",
+  port: 6543,
+  username: "postgres.rshfxkwssnjrdqyvapdi",
+  password: "Ak208753996!",
+  database: "postgres",
+  schema: "public",
   entities: [
     ExpenseEntity,
     CategoryEntity,
     SubCategoryEntity,
     ConversionRatesUSDEntity,
     GroupTypeEntity,
+    UserEntity,
+    GroupEntity,
+    UserGroupsEntity,
+    ExpenseSplitEntity,
+    GroupExpenseParticipantEntity,
+    PaymentSettlementEntity,
+    PaymentSplitSettlementEntity,
   ],
   migrations: ["src/DAL/migrations/*.ts"],
+  subscribers: ["src/DAL/subscriber/*.ts"],
+
   synchronize: false,
 });

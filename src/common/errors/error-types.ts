@@ -34,6 +34,20 @@ export class DBConnectionError extends AppError {
   }
 }
 
+export class UserGroupError extends AppError {
+  constructor(public message: string) {
+    super(UserGroupError.name, message);
+  }
+}
+
+export class ExchangeRateError extends AppError {
+  public statusCode: number;
+  constructor(public message: string, statusCode: number) {
+    super(ExchangeRateError.name, message);
+    this.statusCode = statusCode;
+  }
+}
+
 export const HttpErrorCodeMapper = (err: AppError | any): StatusCodes => {
   if (
     err instanceof InvalidInputError ||

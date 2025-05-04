@@ -1,19 +1,14 @@
 import * as dataManager from "../connectionManager";
 import { logger } from "../../common/logger/logger-wrapper";
-import { DataSource, Repository, SelectQueryBuilder } from "typeorm";
+import { DataSource, EntityManager, Repository } from "typeorm";
 import { ResourceNotFoundError } from "../../common/errors/error-types";
 import { ExpenseEntity } from "../entity/expenseEntity";
 import {
-  Expense,
-  GroupedExpenseDto,
   NewExpense,
   UpdateExpense,
 } from "../../expenses/schemas/expenseSchema";
 import { logContext } from "../../common/logger/logContext";
 import { ConversionRatesUSDEntity } from "../entity/ConversionRatesByUSDEntity";
-import { convertKeysToCamelCase } from "../../common/utils/nameStrategyUtils";
-import { UUID } from "../../common/utils/sharedTypes";
-import { getMonthAndYearAsDate } from "../../common/utils/time/timeZone";
 
 export class ExpenseRepository extends Repository<ExpenseEntity> {
   private readonly logContext: logContext;
@@ -25,7 +20,10 @@ export class ExpenseRepository extends Repository<ExpenseEntity> {
     };
   }
 
-  public async insertExpense(newExpense: NewExpense): Promise<ExpenseEntity> {
+  public async insertExpense(
+    newExpense: NewExpense,
+    transactionManager?: EntityManager
+  ): Promise<ExpenseEntity> {
     logger.debug({ msg: "expense model", metadata: { newExpense } });
     const logCtx: logContext = {
       ...this.logContext,
@@ -33,7 +31,10 @@ export class ExpenseRepository extends Repository<ExpenseEntity> {
     };
     try {
       logger.debug({ msg: "Inserting new expense", metadata: { newExpense } });
-      const result = await this.createQueryBuilder()
+      const queryBuilder = transactionManager
+        ? transactionManager.createQueryBuilder(ExpenseEntity, "expense")
+        : this.createQueryBuilder();
+      const result = await queryBuilder
         .insert()
         .values(newExpense)
         .returning("*")

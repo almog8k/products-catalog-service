@@ -7,9 +7,11 @@ import cron from "node-cron";
 import {
   ExchangeRateResponse,
   exchangeRateResponseSchema,
-} from "../schemas/exchangeRateSchema";
+} from "../../expenses/schemas/exchangeRateSchema";
 import { ConversionRatesUSDEntity } from "../../DAL/entity/ConversionRatesByUSDEntity";
 import axios from "axios";
+import { ExchangeRateError } from "../../common/errors/error-types";
+import { StatusCodes } from "http-status-codes";
 
 export async function updateExchangeRatesIfNeeded(): Promise<number> {
   const EXCHANGE_RATE_API_URL = config.getValue<string>(
@@ -72,7 +74,10 @@ async function fetchExchangeRates(url: string): Promise<ExchangeRateResponse> {
     });
 
     if (response.status !== 200) {
-      throw new Error(`Unexpected response status: ${response.status}`);
+      throw new ExchangeRateError(
+        `Unexpected response status: ${response.status}`,
+        response.status
+      );
     }
 
     const validExchangeRates = util.typeValidator(
@@ -88,8 +93,9 @@ async function fetchExchangeRates(url: string): Promise<ExchangeRateResponse> {
     });
 
     if (validExchangeRates.result !== "success") {
-      throw new Error(
-        `Unexpected response result: ${validExchangeRates.result}`
+      throw new ExchangeRateError(
+        `Unexpected response result: ${validExchangeRates.result}`,
+        StatusCodes.BAD_REQUEST
       );
     }
 

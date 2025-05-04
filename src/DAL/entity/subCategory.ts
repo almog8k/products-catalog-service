@@ -4,14 +4,18 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  Index,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { CategoryEntity } from "./categoryEntity";
+import { ExpenseEntity } from "./expenseEntity";
 
-@Entity("sub_category")
+@Index("sub_category_pkey", ["id"], { unique: true })
+@Entity("sub_category", { schema: "public" })
 export class SubCategoryEntity extends BaseEntity {
   @PrimaryColumn("uuid")
   @Generated("uuid")
@@ -21,7 +25,7 @@ export class SubCategoryEntity extends BaseEntity {
   name: string;
 
   @OneToOne(() => CategoryEntity, (category) => category.subCategories)
-  @JoinColumn({ name: "category_id" })
+  @JoinColumn({ name: "category_id", referencedColumnName: "id" })
   category?: CategoryEntity;
 
   @CreateDateColumn({ name: "created_at", type: "timestamp with time zone" })

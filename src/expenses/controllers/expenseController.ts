@@ -11,7 +11,7 @@ import {
   Expense,
   GroupedExpenseDto,
   NewExpense,
-  NewExpenseSchema,
+  newExpenseSchema,
   TotalSum,
   UpdateExpense,
   UpdateExpenseSchema,
@@ -21,7 +21,12 @@ import {
   GetExpensesTotalRequestQuery,
   getExpensesTotalRequestQuerySchema,
 } from "../schemas/exchangeRateSchema";
-import { headersSchema, uuidSchema } from "../schemas/commonSchema";
+import { timeZoneHeaderSchema } from "../schemas/commonSchema";
+import {
+  GroupExpense,
+  NewGroupExpense,
+  newGroupExpenseSchema,
+} from "../schemas/groupExpenseSchema";
 
 type CreateExpenseHandler = RequestHandler<void, Expense, NewExpense>;
 type GetExpensesHandler = RequestHandler<void, Expense[]>;
@@ -41,19 +46,47 @@ type GetExpensesGroupByMonthYearHandler = RequestHandler<
   void
 >;
 
+type CreateGroupExpenseHandler = RequestHandler<
+  void,
+  GroupExpense,
+  NewGroupExpense
+>;
+
 export const createExpense: CreateExpenseHandler = async (req, res, next) => {
   logger.info({
     msg: `creating new Expense`,
     metadata: { reqBody: req.body },
   });
   try {
-    const expenseToValidate = { ...req.body, userId: req.headers["user-id"] };
+    const expenseToValidate = { ...req.body, userId: req.user.id };
     const newExpense: NewExpense = util.typeValidator(
       expenseToValidate,
-      NewExpenseSchema
+      newExpenseSchema
     );
     const expense = await expenseModel.createExpense(newExpense);
     return res.status(httpStatus.CREATED).json(expense);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const createGroupExpense: CreateGroupExpenseHandler = async (
+  req,
+  res,
+  next
+) => {
+  logger.info({
+    msg: `creating new group expense`,
+    metadata: { reqBody: req.body },
+  });
+  try {
+    req.body.expense.userId = req.user.id;
+    const newGroupExpense: NewGroupExpense = util.typeValidator(
+      req.body,
+      newGroupExpenseSchema
+    );
+    const groupExpense = await expenseModel.createGroupExpense(newGroupExpense);
+    return res.status(httpStatus.CREATED).json(groupExpense);
   } catch (error) {
     return next(error);
   }
@@ -64,11 +97,7 @@ export const getExpenses: GetExpensesHandler = async (req, res, next) => {
     msg: `getting all expenses`,
   });
   try {
-    const userId = req.headers["user-id"];
-
-    const validUserId = util.typeValidator(userId, uuidSchema);
-
-    const expenses = await expenseModel.getExpenses(validUserId);
+    const expenses = await expenseModel.getExpenses(req.user.id);
     return res.status(httpStatus.OK).json(expenses);
   } catch (error) {
     return next(error);
@@ -133,8 +162,7 @@ export const getExpensesTotal: GetTotalExpensesHandler = async (
     msg: `getting expenses total`,
   });
   try {
-    const userId = req.headers["user-id"];
-    const validUserId = util.typeValidator(userId, uuidSchema);
+    const userId = req.user.id;
     const { targetCurrency } = util.typeValidator(
       req.query,
       getExpensesTotalRequestQuerySchema
@@ -142,10 +170,10 @@ export const getExpensesTotal: GetTotalExpensesHandler = async (
 
     logger.debug({
       msg: "validParams",
-      metadata: { validParams: { targetCurrency, validUserId } },
+      metadata: { validParams: { targetCurrency, userId } },
     });
     const totalExpenses = await expenseModel.getTotalExpensesInCurrency(
-      validUserId,
+      userId,
       targetCurrency.toUpperCase()
     );
 
@@ -178,11 +206,14 @@ export const getExpensesGroupByMonthYear: GetExpensesGroupByMonthYearHandler =
       msg: `getting expenses grouped by month and year`,
     });
     try {
-      const userId = req.headers["user-id"];
-      const validHeaders = util.typeValidator(req.headers, headersSchema);
+      const userId = req.user.id;
+      const validHeaders = util.typeValidator(
+        req.headers,
+        timeZoneHeaderSchema
+      );
 
       const expenses = await expenseModel.getExpensesGroupByMonthYear(
-        validHeaders["user-id"],
+        userId,
         validHeaders["time-zone"] ?? "utc"
       );
       return res.status(httpStatus.OK).json(expenses);

@@ -12,6 +12,10 @@ import { inject, injectable } from "tsyringe";
 import { UserGroupsRepository } from "./userGroupsRepository";
 import "reflect-metadata";
 import { GroupRole, UserGroupStatus } from "../../groups/constants/groupConsts";
+import {
+  AppError,
+  ResourceNotFoundError,
+} from "../../common/errors/error-types";
 
 @injectable()
 export class GroupRepository extends Repository<GroupEntity> {
@@ -50,7 +54,7 @@ export class GroupRepository extends Repository<GroupEntity> {
       });
 
       if (!groupWithType) {
-        throw new Error("Group not found");
+        throw new ResourceNotFoundError("Group not found");
       }
 
       await queryRunner.commitTransaction();
@@ -58,7 +62,13 @@ export class GroupRepository extends Repository<GroupEntity> {
       return groupWithType;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new Error(`Error creating group: ${err.message}`);
+      if (err instanceof ResourceNotFoundError) {
+        throw err;
+      }
+      throw new AppError(
+        "CreatingGroupError",
+        `Error creating group: ${err.message}`
+      );
     } finally {
       await queryRunner.release();
     }
@@ -99,5 +109,17 @@ export class GroupRepository extends Repository<GroupEntity> {
       });
     });
     return groups;
+  }
+
+  public async getGroupById(groupId: string): Promise<Group> {
+    logger.debug({ msg: "Getting group by id", metadata: { groupId } });
+    const group = await this.findOne({
+      where: { id: groupId },
+      relations: ["type"],
+    });
+    if (!group) {
+      throw new ResourceNotFoundError("Group not found");
+    }
+    return group;
   }
 }

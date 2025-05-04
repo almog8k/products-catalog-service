@@ -1,6 +1,6 @@
 import { inject, injectable, InjectionToken } from "tsyringe";
 import { SERVICES } from "../../common/constants";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, Not, Repository } from "typeorm";
 import { UserEntity } from "../entity/userEntity";
 import { SimpleUser } from "../../users/schemas/user.schema";
 import { logger } from "../../common/logger/logger-wrapper";
@@ -11,13 +11,14 @@ export class UserRepository extends Repository<UserEntity> {
     super(UserEntity, dataSource.createEntityManager());
   }
 
-  public async getAllAuthenticatedUsers(): Promise<SimpleUser[]> {
+  public async getAllAuthenticatedUsers(meId: string): Promise<SimpleUser[]> {
     logger.info({
       msg: `Getting all authenticated users from DB`,
+      metadata: { meId },
     });
 
     const users = await this.find({
-      where: { role: "authenticated" },
+      where: { role: "authenticated", id: Not(meId) },
       select: ["id", "email", "rawUserMetaData"],
     });
     const simpleUsers: SimpleUser[] = [];

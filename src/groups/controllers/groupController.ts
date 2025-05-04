@@ -7,7 +7,11 @@ import * as groupModel from "../models/groupModel";
 
 import httpStatus from "http-status-codes";
 
-import { headersSchema, uuidSchema } from "../schemas/commonSchema";
+import {
+  headersSchema,
+  userIdBodySchema,
+  uuidSchema,
+} from "../schemas/commonSchema";
 import { GroupTypeEntity } from "../../DAL/entity/groupTypeEntity";
 import {
   Group,
@@ -17,6 +21,7 @@ import {
   updateUserGroupStatusReqSchema,
   UpdateUserGroupStatusRes,
 } from "../schemas/groupSchema";
+import { GroupIdParam, UserIdBody } from "../types";
 
 type GetGroupCategoriesHandler = RequestHandler<void, GroupTypeEntity[]>;
 
@@ -24,8 +29,12 @@ type CreateGroupHandler = RequestHandler<void, Group, NewGroup>;
 
 type GetGroupsByUserIdHandler = RequestHandler<void, Group[]>;
 
+type GetGroupByIdHandler = RequestHandler<GroupIdParam, Group>;
+
+type InviteUserToGroupHandler = RequestHandler<GroupIdParam, void, UserIdBody>;
+
 type UpdateUserGroupStatusHandler = RequestHandler<
-  { groupId: string },
+  GroupIdParam,
   UpdateUserGroupStatusRes,
   UpdateUserGroupStatusReq
 >;
@@ -39,10 +48,6 @@ export const getGroupTypes: GetGroupCategoriesHandler = async (
     msg: `getting all group types`,
   });
   try {
-    // const userId = req.headers["user-id"];
-
-    // const validUserId = util.typeValidator(userId, uuidSchema);
-
     const groupCategories = await groupModel.getGroupTypes();
     return res.status(httpStatus.OK).json(groupCategories);
   } catch (error) {
@@ -56,11 +61,10 @@ export const createGroup: CreateGroupHandler = async (req, res, next) => {
     metadata: { reqBody: req.body },
   });
   try {
-    const userId = req.headers["user-id"];
+    const userId = req.user.id;
 
-    const validUserId = util.typeValidator(userId, uuidSchema);
     const newGroup: NewGroup = util.typeValidator(req.body, newGroupSchema);
-    const group = await groupModel.createGroup(newGroup, validUserId);
+    const group = await groupModel.createGroup(newGroup, userId);
     return res.status(httpStatus.CREATED).json(group);
   } catch (error) {
     return next(error);
@@ -76,11 +80,26 @@ export const getGroupsByUserId: GetGroupsByUserIdHandler = async (
     msg: `getting groups by user id`,
   });
   try {
-    const userId = req.headers["user-id"];
+    const userId = req.user.id;
 
-    const validUserId = util.typeValidator(userId, uuidSchema);
-    const groups = await groupModel.getGroupsByUserId(validUserId);
+    const groups = await groupModel.getGroupsByUserId(userId);
     return res.status(httpStatus.OK).json(groups);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getGroupById: GetGroupByIdHandler = async (req, res, next) => {
+  logger.info({
+    msg: `getting group by id`,
+    metadata: { groupId: req.params.groupId },
+  });
+  try {
+    const groupId = req.params.groupId;
+
+    const validGroupId = util.typeValidator(groupId, uuidSchema);
+    const group = await groupModel.getGroupById(validGroupId);
+    return res.status(httpStatus.OK).json(group);
   } catch (error) {
     return next(error);
   }
@@ -96,11 +115,10 @@ export const updateUserGroupStatus: UpdateUserGroupStatusHandler = async (
     metadata: { reqBody: req.body },
   });
   try {
-    const userId = req.headers["user-id"];
+    const userId = req.user.id;
     const groupId = req.params.groupId;
     const reqBody = req.body;
 
-    const validUserId = util.typeValidator(userId, uuidSchema);
     const validGroupId = util.typeValidator(groupId, uuidSchema);
     const { status } = util.typeValidator(
       reqBody,
@@ -108,11 +126,33 @@ export const updateUserGroupStatus: UpdateUserGroupStatusHandler = async (
     );
 
     const updateUserGroupStatusRes = await groupModel.updateUserGroupStatus(
-      validUserId,
+      userId,
       validGroupId,
       status
     );
     return res.status(httpStatus.OK).json(updateUserGroupStatusRes);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const inviteUserToGroup: InviteUserToGroupHandler = async (
+  req,
+  res,
+  next
+) => {
+  logger.info({
+    msg: `Inviting user to group`,
+    metadata: { groupId: req.params.groupId },
+  });
+  try {
+    const groupId = req.params.groupId;
+
+    const validUserId = util.typeValidator(req.body, userIdBodySchema).userId;
+    const validGroupId = util.typeValidator(groupId, uuidSchema);
+
+    await groupModel.addUserToGroup(validUserId, validGroupId);
+    return res.status(httpStatus.OK).json();
   } catch (error) {
     return next(error);
   }

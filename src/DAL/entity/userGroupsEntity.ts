@@ -43,6 +43,7 @@ export class UserGroupsEntity {
   @CreateDateColumn({
     name: "joined_at",
     type: "timestamp with time zone",
+    default: () => "CURRENT_TIMESTAMP",
   })
   joinedAt: Date;
 }

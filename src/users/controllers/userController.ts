@@ -15,7 +15,7 @@ export const getAllAuthenticatedUsers: GetAllAuthenticatedUsersHandler = async (
     logger.info({
       msg: `getting all authenticated users`,
     });
-    const users = await userModel.getAllAuthenticatedUsers();
+    const users = await userModel.getAllAuthenticatedUsers(req.user.id);
     logger.info({
       msg: `all authenticated users found`,
       metadata: { users },

@@ -1,5 +1,7 @@
 import z from "zod";
 import { ExpenseEntity } from "../../DAL/entity/expenseEntity";
+import { currencySchema } from "./commonSchema";
+import { SplitType } from "../../DAL/entity/expenseSplitEntity";
 
 export const PolygonSchema = z.object({
   type: z.literal("Polygon"),
@@ -12,9 +14,11 @@ export const ExpenseSchema = z
   .object({
     id: z.string().uuid(),
     userId: z.string().uuid(),
+    groupId: z.string().uuid().nullable(),
+    isGroupExpense: z.boolean(),
     description: z.string().max(250),
     price: z.number().min(0.01),
-    currency: z.string().length(3),
+    currency: currencySchema,
     categoryId: z.string().uuid(),
     subCategoryId: z.string().uuid(),
     imageUrl: z.string().url().optional(),
@@ -25,14 +29,15 @@ export const ExpenseSchema = z
 
 export type Expense = z.infer<typeof ExpenseSchema>;
 
-export const NewExpenseSchema = ExpenseSchema.omit({
+export const newExpenseSchema = ExpenseSchema.omit({
   id: true,
   updatedAt: true,
 }).describe("NewExpense");
 
-export type NewExpense = z.infer<typeof NewExpenseSchema>;
+export type NewExpense = z.infer<typeof newExpenseSchema>;
 
-export const UpdateExpenseSchema = NewExpenseSchema.partial()
+export const UpdateExpenseSchema = newExpenseSchema
+  .partial()
   .strict()
   .describe("UpdateExpense");
 

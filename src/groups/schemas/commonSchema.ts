@@ -10,6 +10,10 @@ export const userIdHeaderSchema = z.object({
   "user-id": uuidSchema,
 });
 
+export const userIdBodySchema = z.object({
+  userId: uuidSchema,
+});
+
 export const headersSchema = z
   .object({})
   .merge(timeZoneHeaderSchema)
