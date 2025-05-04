@@ -1,15 +1,23 @@
-# Use Node.js LTS (Long Term Support) as the base image
+# Use Node.js LTS as the base image
 FROM node:slim
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies first (leveraging Docker cache)
+# Copy package files first for better caching
 COPY package*.json ./
-RUN npm ci --only=production
 
-# Copy application code
+# Install dependencies including TypeScript compiler
+RUN npm ci
+
+# Copy all source files
 COPY . .
+
+# Build TypeScript code
+RUN npm run build
+
+# Remove development dependencies to reduce image size
+RUN npm ci --omit=dev
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -17,5 +25,5 @@ ENV NODE_ENV=production
 # Expose the port that the app will run on
 EXPOSE 8080
 
-# Command to run the application
-CMD ["node", "src/index.js"]
+# Command to run the compiled JavaScript code
+CMD ["node", "dist/index.js"]

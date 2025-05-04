@@ -6,6 +6,7 @@
   "scripts": {
     "test:integration": "jest --config=./tests/configurations/integration/jest.config.js",
     "start:dev": "nodemon src/index.ts",
+    "start": "node dist/index.js",
     "build": "tsc",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:generate -d src/DAL/cliDataSource.ts -o src/DAL/migrations",
