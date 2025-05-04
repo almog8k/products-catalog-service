@@ -1,4 +1,4 @@
-import { ConfigSchema } from "./src/common/configuration/configuration-schema";
+import { ConfigSchema } from "./configuration-schema";
 
 export const Configuration: ConfigSchema = {
   port: {

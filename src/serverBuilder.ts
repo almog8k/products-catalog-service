@@ -1,7 +1,6 @@
 import express from "express";
 import defineProductsRoutes from "./products/product-router";
 import * as configurationProvider from "./common/configuration/configuration-provider";
-import { Configuration } from "../config";
 import { logger } from "./common/logger/logger-wrapper";
 import { LOG_LEVEL } from "./common/logger/definition";
 import helmet from "helmet";
@@ -16,6 +15,7 @@ import defineGroupRoutes from "./groups/routes/groupRouter";
 import { registerContainerDependencies } from "./common/containerRegistry";
 import defineUsersRoutes from "./users/routes/userRoutes";
 import { authenticate } from "./common/middlewares/authMiddleware";
+import { Configuration } from "./common/configuration/config";
 const server: express.Application = express();
 
 export async function buildServer(): Promise<express.Application> {

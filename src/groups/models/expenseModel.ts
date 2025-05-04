@@ -6,7 +6,7 @@ import {
   NewExpense,
   TotalSum,
   UpdateExpense,
-} from "../schemas/expenseSchema";
+} from "../../expenses/schemas/expenseSchema";
 import * as conversionRateRepository from "../../DAL/repositories/conversionRatesUSDRepository";
 import { ConversionRatesUSDEntity } from "../../DAL/entity/ConversionRatesByUSDEntity";
 import { ExpenseEntity } from "../../DAL/entity/expenseEntity";

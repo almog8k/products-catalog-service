@@ -1,5 +1,5 @@
 # Use Node.js LTS as the base image
-FROM node:18-alpine
+FROM node:slim
 
 # Set working directory
 WORKDIR /app
@@ -13,10 +13,8 @@ RUN npm ci
 # Copy all source files
 COPY . .
 
-# Build TypeScript code with additional verbosity for debugging
-RUN echo "Building TypeScript project..." && \
-    npx tsc --listFiles && \
-    npm run build
+# Build TypeScript code
+RUN npm run build
 
 # Remove development dependencies to reduce image size
 RUN npm ci --omit=dev
