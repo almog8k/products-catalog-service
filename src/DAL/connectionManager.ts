@@ -46,11 +46,9 @@ export async function getDataSource(): Promise<DataSource> {
 
       // namingStrategy: new CustomNamingStrategy(),
     });
-
     await dataSource.initialize();
     logger.info({
       msg: "Successfully connected to db",
-      metadata: { dbConfig },
     });
 
     return dataSource;
