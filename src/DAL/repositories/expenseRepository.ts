@@ -187,6 +187,18 @@ export class ExpenseRepository extends Repository<ExpenseEntity> {
         throw new Error("Failed to get total price converted to target rate");
       }
 
+      logger.debug({
+        msg: "Total price converted to target rate",
+        metadata: {
+          total: result.total,
+          userId,
+          year,
+          month,
+          timeZone,
+          targetRate,
+        },
+      });
+
       return result.total;
     } catch (err) {
       logger.error({

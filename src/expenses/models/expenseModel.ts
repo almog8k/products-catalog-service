@@ -93,7 +93,10 @@ export const getTotalExpensesInCurrency = async (
     options?.month,
     options?.timeZone
   );
-
+  logger.info({
+    msg: "Got expenses total",
+    metadata: { total },
+  });
   if (!total) {
     total = 0;
   }
