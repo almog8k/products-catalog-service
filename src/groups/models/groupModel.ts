@@ -2,6 +2,7 @@ import { container } from "tsyringe";
 import { logger } from "../../common/logger/logger-wrapper";
 import {
   Group,
+  GroupParticipant,
   NewGroup,
   UpdateUserGroupStatusRes,
 } from "../schemas/groupSchema";
@@ -77,4 +78,30 @@ export const addUserToGroup = async (
     msg: "User added to group.",
     metadata: { userId, groupId },
   });
+};
+
+export const getGroupParticipants = async (
+  groupId: string
+): Promise<GroupParticipant[]> => {
+  logger.info({
+    msg: "Getting group participants.",
+    metadata: { groupId },
+  });
+  const userGroupRepo = container.resolve(UserGroupsRepository);
+  const participants = await userGroupRepo.getGroupParticipants(groupId);
+  const groupParticipants: GroupParticipant[] =
+    participants.map<GroupParticipant>((p) => ({
+      id: p.user.id,
+      fullName: p.user.rawUserMetaData.full_name,
+      email: p.user.email,
+      joinedAt: p.joinedAt,
+      status: p.status,
+      role: p.role,
+    }));
+  logger.debug({
+    msg: "Group participants found.",
+    metadata: { participants },
+  });
+
+  return groupParticipants;
 };

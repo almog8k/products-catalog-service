@@ -101,4 +101,34 @@ export class UserGroupsRepository extends Repository<UserGroupsEntity> {
     });
     return !!userGroup;
   }
+
+  public async getGroupParticipants(
+    groupId: string
+  ): Promise<UserGroupsEntity[]> {
+    try {
+      logger.debug({
+        msg: "Getting group participants",
+        metadata: { groupId },
+      });
+
+      const participants = await this.find({
+        where: { group: { id: groupId }, status: UserGroupStatus.ACCEPTED },
+        relations: ["user"],
+      });
+
+      logger.debug({
+        msg: "Group participants retrieved",
+        metadata: { count: participants.length },
+      });
+      return participants;
+    } catch (err) {
+      logger.error({
+        msg: `Error getting group participants: ${err.message}`,
+        metadata: { groupId },
+      });
+      throw new UserGroupError(
+        `Error getting group participants: ${err.message}`
+      );
+    }
+  }
 }

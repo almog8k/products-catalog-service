@@ -8,6 +8,7 @@ export default function defineGroupRoutes() {
   router.post("/", groupController.createGroup);
   router.get("/me", groupController.getGroupsByUserId);
   router.get("/:groupId", groupController.getGroupById);
+  router.get("/:groupId/participants", groupController.getGroupParticipants);
   router.put(
     "/:groupId/invitation/status",
     groupController.updateUserGroupStatus

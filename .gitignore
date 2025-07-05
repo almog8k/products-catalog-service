@@ -2,3 +2,4 @@ node_modules/
 dist
 dockerfile.dev
 .env*
+scripts

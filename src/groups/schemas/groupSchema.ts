@@ -3,6 +3,7 @@ import { timeRecordSchema } from "../../common/schemas/date.schema";
 import { GroupEntity } from "../../DAL/entity/groupEntity";
 import { UserGroupStatus } from "../constants/groupConsts";
 import { UserGroupsEntity } from "../../DAL/entity/userGroupsEntity";
+import { SimpleUser } from "../../users/schemas/user.schema";
 
 export const groupTypeSchema = z
   .object({
@@ -50,3 +51,6 @@ export type UpdateUserGroupStatusRes = {
   groupId: string;
   status: UserGroupStatus;
 };
+
+export type GroupParticipant = SimpleUser &
+  Pick<UserGroupsEntity, "role" | "joinedAt" | "status">;

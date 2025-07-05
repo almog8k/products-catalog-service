@@ -219,7 +219,7 @@ function calculateSplits(
 
   // Validate that splits add up to total amount (within a small margin of error for floating point)
   const totalSplitAmount = calculatedSplits.reduce(
-    (sum, split) => (sum + split.amount, 0),
+    (sum, split) => sum + split.amount,
     0
   );
   if (Math.abs(totalSplitAmount - totalAmount) > 0.01) {
@@ -289,9 +289,9 @@ export const createGroupExpense = async (
         metadata: { savedSplits },
       });
 
-      const participants = splits.map((split) => ({
-        userId: split.userId,
-        expenseSplitId: newExpense.id,
+      const participants = savedSplits.map((split) => ({
+        groupId: expense.groupId || undefined,
+        expenseSplitId: split.id,
       }));
 
       // 4. Insert the participants into the group_expense_participants table

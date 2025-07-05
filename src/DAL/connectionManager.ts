@@ -16,6 +16,7 @@ import { ExpenseSplitEntity } from "./entity/expenseSplitEntity";
 import { GroupExpenseParticipantEntity } from "./entity/groupExpenseParticipantEntity";
 import { PaymentSettlementEntity } from "./entity/paymentSettlementEntity";
 import { PaymentSplitSettlementEntity } from "./entity/paymentSplitSettlementEntity";
+import { ApartmentEntity } from "./entity/investments/apartments/apartmentEntity";
 
 export let dataSource: DataSource;
 
@@ -41,6 +42,7 @@ export async function getDataSource(): Promise<DataSource> {
         GroupExpenseParticipantEntity,
         PaymentSettlementEntity,
         PaymentSplitSettlementEntity,
+        ApartmentEntity,
       ],
       synchronize: false,
 

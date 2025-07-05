@@ -11,6 +11,7 @@ import { GroupExpenseParticipantEntity } from "./entity/groupExpenseParticipantE
 import { PaymentSettlementEntity } from "./entity/paymentSettlementEntity";
 import { PaymentSplitSettlementEntity } from "./entity/paymentSplitSettlementEntity";
 import { UserEntity } from "./entity/userEntity";
+import { ApartmentEntity } from "./entity/investments/apartments/apartmentEntity";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -33,6 +34,7 @@ export const AppDataSource = new DataSource({
     GroupExpenseParticipantEntity,
     PaymentSettlementEntity,
     PaymentSplitSettlementEntity,
+    ApartmentEntity,
   ],
   migrations: ["src/DAL/migrations/*.ts"],
   subscribers: ["src/DAL/subscriber/*.ts"],

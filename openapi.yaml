@@ -27,19 +27,19 @@ components:
         price:
           type: number
           format: float
-          example: 3.50
+          example: 25
         currency:
           type: string
           maxLength: 3
-          example: "USD"
+          example: "ILS"
         categoryId:
           type: string
           format: uuid
-          example: "f1adb7ff-6ae1-4139-98a3-f439b62504b6"
+          example: "004d14fd-55d1-436d-b4b7-430b21b9cb35"
         subCategoryId:
           type: string
           format: uuid
-          example: "2ebbef0f-1023-4093-9cb6-433cd0afb828"
+          example: "7be4b990-1533-46ff-a3d2-eaa812332080"
         createdAt:
           type: string
           format: date-time
@@ -57,7 +57,7 @@ components:
             groupId:
               type: string
               format: uuid
-              example: "01234567-89ab-cdef-0123-456789abcdef"
+              example: "db702b7c-7517-4a42-bddc-04f7736454b1"
               nullable: true
             isGroupExpense:
               type: boolean
@@ -126,7 +126,7 @@ components:
         userId:
           type: string
           format: uuid
-          example: "01234567-89ab-cdef-0123-456789abcdef"
+          example: "5280312f-b98e-46be-834c-ed50c8bd2f75"
         amount:
           type: number
           format: float
@@ -138,7 +138,7 @@ components:
           nullable: true
         splitType:
           type: string
-          enum: [equal, custom, percentage]
+          enum: [EQUAL, CUSTOM, PERCENTAGE]
           example: "equal"
       required:
         - userId
@@ -290,7 +290,221 @@ components:
       required:
         - id
         - email
-        - fullName                           
+        - fullName
+
+    ApartmentStatus:
+      type: string
+      enum: [available, reserved, sold]
+      example: "available"
+
+    NewApartment:
+      type: object
+      properties:
+        model:
+          type: string
+          maxLength: 10
+          example: "A1"
+        building:
+          type: string
+          maxLength: 10
+          example: "Building A"
+        plot:
+          type: integer
+          example: 1
+        floor:
+          type: integer
+          example: 3
+        apartmentNum:
+          type: integer
+          example: 15
+        rooms:
+          type: integer
+          example: 4
+        area:
+          type: number
+          minimum: 0
+          example: 95.5
+        balcony:
+          type: number
+          minimum: 0
+          example: 12.0
+        storage:
+          type: number
+          minimum: 0
+          example: 5.0
+        storageNum:
+          type: integer
+          example: 1
+        parkingSpots:
+          type: integer
+          minimum: 0
+          example: 1
+        price:
+          type: number
+          minimum: 0
+          example: 1200000
+        blueprintFilename:
+          type: string
+          maxLength: 255
+          example: "apartment_15_floor_3.pdf"
+        blueprintUrl:
+          type: string
+          maxLength: 500
+          format: uri
+          example: "https://example.com/blueprints/apartment_15.pdf"
+        blueprintBucketPath:
+          type: string
+          maxLength: 500
+          example: "/blueprints/building_a/apartment_15.pdf"
+        status:
+          $ref: "#/components/schemas/ApartmentStatus"
+        isActive:
+          type: boolean
+          example: true
+        notes:
+          type: string
+          example: "Great location with city view"
+        estimatedRentMonthly:
+          type: number
+          minimum: 0
+          example: 5500
+        apartmentScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          example: 85.5
+      required:
+        - model
+        - building
+        - plot
+        - floor
+        - apartmentNum
+        - rooms
+        - area
+        - balcony
+        - storage
+        - storageNum
+        - parkingSpots
+        - price
+        - blueprintFilename
+        - blueprintBucketPath
+        - status
+        - isActive
+
+    UpdateApartment:
+      type: object
+      properties:
+        model:
+          type: string
+          maxLength: 10
+          example: "A1"
+        building:
+          type: string
+          maxLength: 10
+          example: "Building A"
+        plot:
+          type: integer
+          example: 1
+        floor:
+          type: integer
+          example: 3
+        apartmentNum:
+          type: integer
+          example: 15
+        rooms:
+          type: integer
+          example: 4
+        area:
+          type: number
+          minimum: 0
+          example: 95.5
+        balcony:
+          type: number
+          minimum: 0
+          example: 12.0
+        storage:
+          type: number
+          minimum: 0
+          example: 5.0
+        storageNum:
+          type: integer
+          example: 1
+        parkingSpots:
+          type: integer
+          minimum: 0
+          example: 1
+        price:
+          type: number
+          minimum: 0
+          example: 1200000
+        blueprintFilename:
+          type: string
+          maxLength: 255
+          example: "apartment_15_floor_3.pdf"
+        blueprintUrl:
+          type: string
+          maxLength: 500
+          format: uri
+          example: "https://example.com/blueprints/apartment_15.pdf"
+        blueprintBucketPath:
+          type: string
+          maxLength: 500
+          example: "/blueprints/building_a/apartment_15.pdf"
+        status:
+          $ref: "#/components/schemas/ApartmentStatus"
+        isActive:
+          type: boolean
+          example: true
+        notes:
+          type: string
+          example: "Great location with city view"
+        estimatedRentMonthly:
+          type: number
+          minimum: 0
+          example: 5500
+        apartmentScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          example: 85.5
+
+    Apartment:
+      allOf:
+        - $ref: "#/components/schemas/NewApartment"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: "01234567-89ab-cdef-0123-456789abcdef"
+            totalArea:
+              type: number
+              minimum: 0
+              example: 107.5
+              description: "Calculated field: area + balcony + storage"
+            pricePerSqm:
+              type: number
+              minimum: 0
+              example: 12578.95
+              description: "Calculated field: price / area"
+            estimatedYieldAnnual:
+              type: number
+              minimum: 0
+              maximum: 100
+              example: 5.5
+              description: "Calculated field: (estimatedRentMonthly * 12 / price) * 100"
+            createdAt:
+              type: string
+              format: date-time
+              example: "2023-04-22T15:25:00Z"
+            updatedAt:
+              type: string
+              format: date-time
+              example: "2023-04-22T15:25:00Z"
+          required:
+            - id
+            - createdAt
+            - updatedAt
 
 security:
   - bearerAuth: []
@@ -515,6 +729,13 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/ExpenseSplit"
+                  example: 
+                    - userId: "5280312f-b98e-46be-834c-ed50c8bd2f75"
+                      amount: 12.50
+                      splitType: "EQUAL"
+                    - userId: "55954f31-4711-470b-92f9-92d4835aba61"
+                      amount: 12.50
+                      splitType: "EQUAL"
               required:
                 - expense
                 - splits
@@ -794,7 +1015,433 @@ paths:
           description: Group not found
         '500':
           description: Internal Server Error
+  /group/{groupId}/participants:
+    get:
+      tags:
+        - "group"
+      operationId: getGroupParticipants
+      summary: Retrieve all participants in a group
+      description: Retrieves all users who are participants (members) in the specified group
+      parameters:
+        - name: groupId
+          in: path
+          description: The ID of the group to retrieve participants for
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "01234567-89ab-cdef-0123-456789abcdef"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/SimpleUser"
+                    - type: object
+                      properties:
+                        role:
+                          type: string
+                          enum: [admin, member]
+                          example: "member"
+                          description: The user's role in the group
+                        status:
+                          $ref: "#/components/schemas/UserGroupStatus"
+                        joinedAt:
+                          type: string
+                          format: date-time
+                          example: "2023-04-22T15:25:00Z"
+                          description: When the user joined the group
+                      required:
+                        - role
+                        - status
+                        - joinedAt
+        '401':
+          description: Unauthorized
+        '404':
+          description: Group not found
+        '500':
+          description: Internal Server Error
+          
                     
+
+  /apartment:
+    get:
+      tags:
+        - "apartment"
+      operationId: getApartments
+      summary: Retrieve all apartments
+      description: Retrieves all apartments with optional filtering and sorting
+      parameters:
+        - name: model
+          in: query
+          schema:
+            type: string
+          description: Filter by apartment model
+        - name: building
+          in: query
+          schema:
+            type: string
+          description: Filter by building name
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/ApartmentStatus"
+          description: Filter by apartment status
+        - name: minPlot
+          in: query
+          schema:
+            type: integer
+          description: Minimum plot number
+        - name: maxPlot
+          in: query
+          schema:
+            type: integer
+          description: Maximum plot number
+        - name: minFloor
+          in: query
+          schema:
+            type: integer
+          description: Minimum floor number
+        - name: maxFloor
+          in: query
+          schema:
+            type: integer
+          description: Maximum floor number
+        - name: minRooms
+          in: query
+          schema:
+            type: integer
+          description: Minimum number of rooms
+        - name: maxRooms
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of rooms
+        - name: minArea
+          in: query
+          schema:
+            type: number
+          description: Minimum area in square meters
+        - name: maxArea
+          in: query
+          schema:
+            type: number
+          description: Maximum area in square meters
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+          description: Minimum price
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+          description: Maximum price
+        - name: minParkingSpots
+          in: query
+          schema:
+            type: integer
+          description: Minimum number of parking spots
+        - name: maxParkingSpots
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of parking spots
+        - name: isActive
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [price, area, apartmentScore, estimatedYieldAnnual, pricePerSqm, estimatedRentMonthly, createdAt]
+          description: Sort field
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sort order
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: Number of apartments to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Number of apartments to skip
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Apartment"
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+    post:
+      tags:
+        - "apartment"
+      operationId: createApartment
+      summary: Create a new apartment
+      description: Creates a new apartment listing
+      requestBody:
+        description: The apartment to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewApartment"
+      responses:
+        '201':
+          description: The created apartment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Apartment"
+        '400':
+          description: Bad Request - Invalid apartment data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /apartment/{id}:
+    get:
+      tags:
+        - "apartment"
+      operationId: getApartmentById
+      summary: Retrieve an apartment by ID
+      description: Retrieves the apartment with the specified ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The apartment ID
+      responses:
+        '200':
+          description: The requested apartment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Apartment"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Apartment not found
+        '500':
+          description: Internal Server Error
+
+    put:
+      tags:
+        - "apartment"
+      operationId: updateApartmentById
+      summary: Update an apartment by ID
+      description: Updates the apartment with the specified ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The apartment ID
+      requestBody:
+        description: The apartment data to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateApartment"
+      responses:
+        '200':
+          description: The updated apartment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Apartment"
+        '400':
+          description: Bad Request - Invalid apartment data
+        '401':
+          description: Unauthorized
+        '404':
+          description: Apartment not found
+        '500':
+          description: Internal Server Error
+
+    delete:
+      tags:
+        - "apartment"
+      operationId: deleteApartmentById
+      summary: Delete an apartment by ID
+      description: Deletes the apartment with the specified ID (soft delete by setting isActive to false)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The apartment ID
+      responses:
+        '204':
+          description: Apartment deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Apartment not found
+        '500':
+          description: Internal Server Error
+
+  /apartment/search:
+    get:
+      tags:
+        - "apartment"
+      operationId: searchApartments
+      summary: Search apartments with advanced filters
+      description: Search apartments with comprehensive filtering options (alias for GET /apartment with enhanced search capabilities)
+      parameters:
+        - name: model
+          in: query
+          schema:
+            type: string
+          description: Filter by apartment model
+        - name: building
+          in: query
+          schema:
+            type: string
+          description: Filter by building name
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/ApartmentStatus"
+          description: Filter by apartment status
+        - name: minPlot
+          in: query
+          schema:
+            type: integer
+          description: Minimum plot number
+        - name: maxPlot
+          in: query
+          schema:
+            type: integer
+          description: Maximum plot number
+        - name: minFloor
+          in: query
+          schema:
+            type: integer
+          description: Minimum floor number
+        - name: maxFloor
+          in: query
+          schema:
+            type: integer
+          description: Maximum floor number
+        - name: minRooms
+          in: query
+          schema:
+            type: integer
+          description: Minimum number of rooms
+        - name: maxRooms
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of rooms
+        - name: minArea
+          in: query
+          schema:
+            type: number
+          description: Minimum area in square meters
+        - name: maxArea
+          in: query
+          schema:
+            type: number
+          description: Maximum area in square meters
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+          description: Minimum price
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+          description: Maximum price
+        - name: minParkingSpots
+          in: query
+          schema:
+            type: integer
+          description: Minimum number of parking spots
+        - name: maxParkingSpots
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of parking spots
+        - name: isActive
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [price, area, apartmentScore, estimatedYieldAnnual, pricePerSqm, estimatedRentMonthly, createdAt]
+          description: Sort field
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sort order
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: Number of apartments to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Number of apartments to skip
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Apartment"
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
 
   /users/authenticated/:
     get:

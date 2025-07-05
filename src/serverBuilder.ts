@@ -16,6 +16,7 @@ import { registerContainerDependencies } from "./common/containerRegistry";
 import defineUsersRoutes from "./users/routes/userRoutes";
 import { authenticate } from "./common/middlewares/authMiddleware";
 import { Configuration } from "./common/configuration/config";
+import defineApartmentRoutes from "./apartments/routes/apartmentRouter";
 const server: express.Application = express();
 
 export async function buildServer(): Promise<express.Application> {
@@ -47,6 +48,7 @@ function buildRoutes(): void {
   server.use("/categories", authenticate, defineCategoriesRoutes());
   server.use("/group", authenticate, defineGroupRoutes());
   server.use("/users", authenticate, defineUsersRoutes());
+  server.use("/apartment", authenticate, defineApartmentRoutes());
   buildDocsRoutes();
 }
 

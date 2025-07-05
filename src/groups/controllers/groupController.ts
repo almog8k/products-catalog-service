@@ -15,6 +15,7 @@ import {
 import { GroupTypeEntity } from "../../DAL/entity/groupTypeEntity";
 import {
   Group,
+  GroupParticipant,
   NewGroup,
   newGroupSchema,
   UpdateUserGroupStatusReq,
@@ -37,6 +38,11 @@ type UpdateUserGroupStatusHandler = RequestHandler<
   GroupIdParam,
   UpdateUserGroupStatusRes,
   UpdateUserGroupStatusReq
+>;
+
+type GetGroupParticipantsHandler = RequestHandler<
+  GroupIdParam,
+  GroupParticipant[]
 >;
 
 export const getGroupTypes: GetGroupCategoriesHandler = async (
@@ -153,6 +159,26 @@ export const inviteUserToGroup: InviteUserToGroupHandler = async (
 
     await groupModel.addUserToGroup(validUserId, validGroupId);
     return res.status(httpStatus.OK).json();
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getGroupParticipants: GetGroupParticipantsHandler = async (
+  req,
+  res,
+  next
+) => {
+  logger.info({
+    msg: `Getting group participants`,
+    metadata: { groupId: req.params.groupId },
+  });
+  try {
+    const groupId = req.params.groupId;
+
+    const validGroupId = util.typeValidator(groupId, uuidSchema);
+    const participants = await groupModel.getGroupParticipants(validGroupId);
+    return res.status(httpStatus.OK).json(participants);
   } catch (error) {
     return next(error);
   }

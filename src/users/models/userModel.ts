@@ -13,3 +13,13 @@ export const getAllAuthenticatedUsers = async (
   logger.debug({ msg: "Users found.", metadata: { users } });
   return users;
 };
+
+export const getUsersByIds = async (
+  userIds: string[]
+): Promise<SimpleUser[]> => {
+  const userRepo = container.resolve(UserRepository);
+
+  const users = await userRepo.getUsersByIds(userIds);
+  logger.debug({ msg: "Users found by IDs.", metadata: { users } });
+  return users;
+};

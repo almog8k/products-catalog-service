@@ -11,6 +11,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
+    
     "strictNullChecks": true,
     "paths": {
       "@logger": ["./src/common/logger/logger-wrapper"],
